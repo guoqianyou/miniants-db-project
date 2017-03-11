@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean class="db.dbcore.cconnection.RDSSpaceConfig">
+        <property name="spaceName" value="test"/>
+        <property name="rdsType" value="MYSQL"/>
+        <property name="dataSource">
+            <bean class="org.logicalcobwebs.proxool.ProxoolDataSource">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="driverUrl" value="jdbc:mysql://www.kolabao.com:3666/EP?characterEncoding=utf8&amp;autoReconnect=true&amp;rewriteBatchedStatements=true"/>
+                <property name="user" value="CAMPUS" />
+                <property name="password" value="CAMPUS_PW" />
+                <property name="alias" value="Pool_default" /><!--不能重复-->
+                <property name="houseKeepingSleepTime" value="90000" />
+                <property name="prototypeCount" value="0" />
+                <property name="maximumConnectionCount" value="500" />
+                <property name="minimumConnectionCount" value="2" />
+                <property name="simultaneousBuildThrottle" value="500" />
+                <property name="maximumConnectionLifetime" value="14400000" />
+                <property name="houseKeepingTestSql" value="select CURRENT_DATE" />
+                <property name="maximumActiveTime" value="7200000" />
+            </bean>
+        </property>
+        <property name="ormBeanPackages">
+            <list>
+                <value>models</value>
+            </list>
+        </property>
+    </bean>
+</beans>
