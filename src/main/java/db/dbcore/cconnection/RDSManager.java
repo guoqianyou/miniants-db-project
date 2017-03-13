@@ -19,7 +19,7 @@ import java.util.Set;
  * Created by guoqi on 2017/3/8.
  */
 public class RDSManager {
-
+    public static String DEFAULT_SPACE = "default";
     private static  RDSManager rdsManager;
     private static  Map<String,RDSSpaceConfig> spaceConfigs = new HashMap<>();
 

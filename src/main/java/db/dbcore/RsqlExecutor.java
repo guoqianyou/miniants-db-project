@@ -156,15 +156,15 @@ public class RsqlExecutor {
             if (dbCvo.isDoCount()) {
                 if (recordCount == 0 || pagination == 1 || pagination * rowCount > recordCount) {
                     time = System.currentTimeMillis();
-                    pstmt = con.prepareStatement(dialect.obtainCountSql(orgSqlString));
+//                    pstmt = con.prepareStatement(dialect.obtainCountSql(orgSqlString));
 
-                    if (dialect.needSetParamForCount()) {
-                        // 设置参数
-                        for (NamedParam sqlNamedParam : sqlNamedParams) {
-                            if (-1 != sqlNamedParam.getIndex())
-                                pstmt.setObject(sqlNamedParam.getIndex(), sqlNamedParam.getValue(), sqlNamedParam.getType());
-                        }
-                    }
+//                    if (dialect.needSetParamForCount()) {
+//                        // 设置参数
+//                        for (NamedParam sqlNamedParam : sqlNamedParams) {
+//                            if (-1 != sqlNamedParam.getIndex())
+//                                pstmt.setObject(sqlNamedParam.getIndex(), sqlNamedParam.getValue(), sqlNamedParam.getType());
+//                        }
+//                    }
 
                     rs = pstmt.executeQuery();
                     if (rs.next())
@@ -181,9 +181,9 @@ public class RsqlExecutor {
                 }
             }
 
-            msg.append("Read Data Records [").append(rsqlRvo.getRows() != null ? rsqlRvo.getRows().size() : 0).append("], took:[").append(System.currentTimeMillis() - time).append("ms];");
-            rsqlRvo.setMsg(true, "数据库操作[executeQuery]数据库操作成功！");
-            rsqlRvo.setStatus(true);
+//            msg.append("Read Data Records [").append(rsqlRvo.getRows() != null ? rsqlRvo.getRows().size() : 0).append("], took:[").append(System.currentTimeMillis() - time).append("ms];");
+//            rsqlRvo.setMsg(true, "数据库操作[executeQuery]数据库操作成功！");
+//            rsqlRvo.setStatus(true);
             RDSManager.freeLocalConnection(dbCvo._getSpaceName(), con);
         } catch (SQLException e) {
             // 无论有任何失败后，ResultSet也必须关闭

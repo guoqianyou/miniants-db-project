@@ -20,7 +20,7 @@ public class RDSSpaceConfig implements InitializingBean {
     private RDSType rdsType; //数据库类型  mysql  oracle
     private Map<String, Class<? extends Modelable>> ormBeans = new HashMap<>();
     private List<String> ormBeanPackages; // orm 的包路径 用于加载到spring 中
-    private DataSource dataSource; // 数据池
+    private DataSource dataSource; // 数据库连接池子
     private boolean cannotRebuild; //无法重构？~ TODO
 
     private int defaultScale = 2; //默认double float的精度 TODO

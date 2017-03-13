@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
     <bean class="db.dbcore.cconnection.RDSSpaceConfig">
-        <property name="spaceName" value="test"/>
+        <property name="spaceName" value="default"/>
         <property name="rdsType" value="MYSQL"/>
         <property name="dataSource">
             <bean class="org.logicalcobwebs.proxool.ProxoolDataSource">
