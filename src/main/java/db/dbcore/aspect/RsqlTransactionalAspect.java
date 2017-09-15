@@ -1,11 +1,11 @@
-package db.dbcore.transaction;
+package db.dbcore.aspect;
 
 import db.RsqlConstants;
-import db.dbcore.cconnection.RDSManager;
+import db.dbcore.transaction.RsqlTransaction;
+import db.dbcore.transaction.TransactionManager;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import static db.dbcore.cconnection.RDSManager.DEFAULT_SPACE;
 
@@ -19,7 +19,7 @@ public class RsqlTransactionalAspect {
         super();
         RsqlConstants.logger.info("数据库事物切面类+"+this.getClass()+"初始化完成！");
     }
-    @Around(value = "@annotation(RsqlTransaction)&&@annotation(rsqlTranAnno)")
+    @Around(value = "@annotation(db.dbcore.transaction.RsqlTransaction)&&@annotation(rsqlTranAnno)")
     public Object doAround(final ProceedingJoinPoint pjp, RsqlTransaction rsqlTranAnno) throws Throwable {
         try {
             TransactionManager.start(DEFAULT_SPACE);

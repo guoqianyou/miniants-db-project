@@ -106,9 +106,7 @@ public class RsqlExecutor {
         List<NamedParam> sqlNamedParams = dbCvo._getNamedParams();
 //        Dialect dialect = RDSManager.getLocalSpaceConfig(dbCvo._getSpaceName()).getDialect();
         long time;
-        StringBuilder msg = new StringBuilder();
-
-        msg.append("In table [ ").append(dbCvo.getBeanName()).append(" ]");
+        rsqlRvo.appendMsg("In table [ ").append(dbCvo.getBeanName()).append(" ]");
 
         try {
             // 自动提交设置为False为回滚准备
@@ -138,7 +136,7 @@ public class RsqlExecutor {
 
             // rs查询
             rs = pstmt.executeQuery();
-            msg.append("doQuery took:[").append(System.currentTimeMillis() - time).append("ms];");
+            rsqlRvo.appendMsg("doQuery took:[").append(System.currentTimeMillis() - time).append("ms];");
 
             /******************** 保存数据*******************************/
             // 构造并保存结果集合
@@ -174,34 +172,34 @@ public class RsqlExecutor {
                     rs.close();
                     pstmt.clearParameters();
                     pstmt.close();
-                    msg.append("doCount took:[").append(System.currentTimeMillis() - time).append("ms];");
+                    rsqlRvo.appendMsg("doCount took:[").append(System.currentTimeMillis() - time).append("ms];");
                 } else {
                     rsqlRvo.setRecordCount(recordCount);
-                    msg.append("useCount ").append(recordCount).append(" ;");
+                    rsqlRvo.appendMsg("useCount ").append(recordCount).append(" ;");
                 }
             }
 
-//            msg.append("Read Data Records [").append(rsqlRvo.getRows() != null ? rsqlRvo.getRows().size() : 0).append("], took:[").append(System.currentTimeMillis() - time).append("ms];");
+//             rsqlRvo.appendMsg("Read Data Records [").append(rsqlRvo.getRows() != null ? rsqlRvo.getRows().size() : 0).append("], took:[").append(System.currentTimeMillis() - time).append("ms];");
 //            rsqlRvo.setMsg(true, "数据库操作[executeQuery]数据库操作成功！");
 //            rsqlRvo.setStatus(true);
             RDSManager.freeLocalConnection(dbCvo._getSpaceName(), con);
         } catch (SQLException e) {
             // 无论有任何失败后，ResultSet也必须关闭
-            msg = new StringBuilder("数据库执行Sql过程中发生异常：");
+            rsqlRvo.appendMsg("数据库执行Sql过程中发生异常：");
             try {
                 if (rs != null) {
                     rs.close();
-                    msg.append("异常后处理ResultSet.close()已完成。");
+                    rsqlRvo.appendMsg("异常后处理ResultSet.close()已完成。");
                 }
             } catch (Exception e1) {
-                msg.append("异常后处理ResultSet.close()也发生异常。");
+                rsqlRvo.appendMsg("异常后处理ResultSet.close()也发生异常。");
             }
             // 无论有任何失败后，预储存也必须关闭
             try {
                 pstmt.close();
-                msg.append("异常后处理PreparedStatement.close()已完成。");
+                rsqlRvo.appendMsg("异常后处理PreparedStatement.close()已完成。");
             } catch (Exception e1) {
-                msg.append("异常后处理PreparedStatement.close()也发生异常。");
+                rsqlRvo.appendMsg("异常后处理PreparedStatement.close()也发生异常。");
             }
             /**
              * 重新抛出，spring或Aop配置的RsqlAspect配置事务将捕获此异常， 并调用@{link
@@ -210,16 +208,17 @@ public class RsqlExecutor {
 //            rsqlRvo.setMsg(false, "数据库操作[executeQuery]出现异常:" + e.toString());
             throw new RsqlExecuteException(DbErrorCode.RSQL_QUERY_ERROR, "RsqlExecutor executeQuery 遇到数据库SQL异常", e);
         } finally {
-            // 必须清除参数
-//            dbCvo.clear();
-//            if (!RDBManager.isTransaction(dbCvo._getSpaceName())) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-//            }
+            RDSManager.freeLocalConnection(dbCvo._getSpaceName(),con);
 
+//            // 必须清除参数
+////            dbCvo.clear();
+////            if (!RDBManager.isTransaction(dbCvo._getSpaceName())) {
+//            try {
+//                con.close();
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+////            }
         }
         /* 数据库操作结束 */
 

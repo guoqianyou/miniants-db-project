@@ -1,6 +1,7 @@
 package db.dbcore.transaction;
 
 import core.exception.NestedException;
+import core.util.Assert;
 import db.DbErrorCode;
 import db.exception.RsqlConnectionException;
 
@@ -18,8 +19,9 @@ public class TransactionManager {
      */
     public static void start(final String spaceName) {
         //获取事物的连接
-        Connection connection = RDSThreadManager.getConnection(spaceName);
-        RDSThreadManager.initAndAddLevel(spaceName);
+        Connection connection = RsqlThreadManager.createThreadConnection(spaceName);
+        RsqlThreadManager.setTransactionStatus(spaceName,true);
+        RsqlThreadManager.initAndAddLevel(spaceName);
         try {
             connection.setAutoCommit(false);
         } catch (SQLException e) {
@@ -27,17 +29,23 @@ public class TransactionManager {
         }
     }
 
+    /**
+     * 提交事物
+     * @param spaceName 提交的 数据库空间
+     */
     public static void commit(final String spaceName) {
-        Connection connection = RDSThreadManager.getConnection(spaceName);
-        int getlevel = RDSThreadManager.getlevel(spaceName);
+        RsqlThreadTransactionBean threadTransactionBean = RsqlThreadManager.getThreadTransactionBean(spaceName);
+        Assert.notNull(threadTransactionBean,DbErrorCode.RSQL_TRANSACTION_ERROR,"关闭事物时，线程中不存在 所需要关闭的事物bean");
+        Connection connection = threadTransactionBean.getConnection();
+        int getlevel = RsqlThreadManager.getlevel(spaceName);
         try {
             if (null != connection && getlevel == 1) {
                 connection.commit();
                 connection.setAutoCommit(true);
                 connection.close();
-                RDSThreadManager.remove(spaceName);
+                RsqlThreadManager.remove(spaceName);
             } else {
-                RDSThreadManager.minusLevel(spaceName);
+                RsqlThreadManager.minusLevel(spaceName);
             }
         } catch (SQLException e) {
             throw new RsqlConnectionException(DbErrorCode.RSQL_CONNECTION_ERROR, "提交事务失败", e);
@@ -47,7 +55,7 @@ public class TransactionManager {
     public static void rollback(final Throwable ex, final String spaceName) {
         Connection connection = null;
         try {
-            connection = (Connection) RDSThreadManager.getConnectionObj(spaceName);
+            connection = RsqlThreadManager.getThreadTransactionBean(spaceName).getConnection();
             if (connection != null) {
                 connection.rollback();
                 connection.setAutoCommit(true);
@@ -66,8 +74,12 @@ public class TransactionManager {
                 } catch (SQLException e) {
                     //throw new RsqlConnectionException(ServiceCode.RSQL_CONNECTION_ERROR, "数据库关闭错误", e);
                 }
-            RDSThreadManager.remove(spaceName);
+            RsqlThreadManager.remove(spaceName);
         }
+    }
+
+    public static boolean isTransaction(String spaceName){
+        return  RsqlThreadManager.getThreadTransactionBean(spaceName).isTransactionStatus();
     }
 
 }

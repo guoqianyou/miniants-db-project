@@ -23,8 +23,10 @@ dependencies {
     def springVersion = "5.0.0.M5"
     compile('mysql:mysql-connector-java:6.0.5',
             'org.apache.logging.log4j:log4j-core:2.8.1',
+            'org.springframework.data:spring-data-elasticsearch:jar:2.1.6.RELEASE',
             'org.springframework:spring-context:'+springVersion,
             'org.springframework:spring-aspects:'+springVersion,
+
 
     )
     compile('com.cloudhopper.proxool:proxool:0.9.1') {
